@@ -56,10 +56,10 @@ class Redis::Model
   # Issues delete commands for all defined fields
   def delete(name = nil)
     if name
-      redis.delete field_key(name.to_s)
+      redis.del field_key(name.to_s)
     else
       self.class.fields.each do |field|
-        redis.delete field_key(field[:name])
+        redis.del field_key(field[:name])
       end
       redis.srem "sequence:#{prefix}:all", self.id
     end
