@@ -102,7 +102,7 @@ class Redis::Model
     # Creates new model instance with new uniqid
     # NOTE: "sequence:model_name:id" key is used
     def create(values = {})
-      populate_model(self.new(next_id))
+      populate_model(self.new(next_id), values)
     end
 
     # Creates new model instance with given id
