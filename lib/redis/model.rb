@@ -361,7 +361,8 @@ class Redis::Model
     alias_method :member?, :include?
 
     def members
-      @redis.smembers(@name).map { |v| @marshal.load(v) }
+      set_members = @redis.smembers(@name) || []
+      set_members.map { |v| @marshal.load(v) }
     end
 
     def intersect(*keys)
@@ -377,7 +378,7 @@ class Redis::Model
     end
 
     def length
-      @redis.llen(@name)
+      @redis.scard(@name)
     end
 
     def to_s
