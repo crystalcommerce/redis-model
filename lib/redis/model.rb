@@ -102,8 +102,9 @@ class Redis::Model
     end
 
     def all
+      ids = self.redis.smembers("sequence:#{prefix}:all") || []
       entries = []
-      self.redis.smembers("sequence:#{prefix}:all").each do |id|
+      ids.each do |id|
         entries << self.new(id)
       end
       entries
