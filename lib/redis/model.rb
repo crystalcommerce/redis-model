@@ -45,7 +45,7 @@ class Redis::Model
   attr_accessor :id
 
   def initialize(id)
-    redis.sadd "sequence:#{prefix}:all" id
+    redis.sadd "sequence:#{prefix}:all", id
     self.id = id
   end
 
@@ -61,7 +61,7 @@ class Redis::Model
       self.class.fields.each do |field|
         redis.delete field_key(field[:name])
       end
-      redis.srem "sequence:#{prefix}:all" self.id
+      redis.srem "sequence:#{prefix}:all", self.id
     end
   end
 
@@ -102,9 +102,8 @@ class Redis::Model
     end
 
     def all
-      ids = self.redis.smembers "sequence:#{prefix}:all"
       entries = []
-      ids.each do |id|
+      self.redis.smembers("sequence:#{prefix}:all").each do |id|
         entries << self.new(id)
       end
       entries
