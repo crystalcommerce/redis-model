@@ -45,6 +45,7 @@ class Redis::Model
   attr_accessor :id
 
   def initialize(id)
+    redis.sadd "sequence:#{prefix}:all" id
     self.id = id
   end
 
@@ -60,6 +61,7 @@ class Redis::Model
       self.class.fields.each do |field|
         redis.delete field_key(field[:name])
       end
+      redis.srem "sequence:#{prefix}:all" self.id
     end
   end
 
@@ -97,6 +99,15 @@ class Redis::Model
         gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
         gsub(/([a-z\d])([A-Z])/,'\1_\2').
         downcase
+    end
+
+    def all
+      ids = self.redis.smembers "sequence:#{prefix}:all"
+      entries = []
+      ids.each do |id|
+        entries << self.new(id)
+      end
+      entries
     end
 
     # Creates new model instance with new uniqid
