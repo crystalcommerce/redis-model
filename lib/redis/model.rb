@@ -92,7 +92,7 @@ class Redis::Model
     attr_accessor :prefix
 
     def prefix
-      @prefix ||= self.class.to_s.
+      @prefix ||= self.name.
         sub(%r{(.*::)}, '').
         gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
         gsub(/([a-z\d])([A-Z])/,'\1_\2').
