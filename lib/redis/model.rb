@@ -431,6 +431,10 @@ class Redis::Model
       @redis.hdel @name, k
     end
 
+    def remove_all
+      @redis.del(@name)
+    end
+
     def has_key?(k)
       @redis.hexists @name, k
     end
@@ -460,4 +464,3 @@ class Redis::Model
     end
   end
 end
-
