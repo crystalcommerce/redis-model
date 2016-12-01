@@ -5,13 +5,13 @@
 
 Gem::Specification.new do |s|
   s.name = %q{redis-model}
-  s.version = "0.1.3"
+  s.version = "0.1.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Vladimir Kolesnikov"]
-  s.date = %q{2010-06-28}
+  s.authors = ["Vladimir Kolesnikov", "David Vezzani"]
+  s.date = %q{2016-11-29}
   s.description = %q{Minimal model support for redis-rb. Directly maps ruby properties to model_name:id:field_name keys in redis. Scalar, list and set properties are supported.}
-  s.email = %q{voloko@gmail.com}
+  s.email = %q{voloko@gmail.com dave.vezzani@crystalcommerce.com}
   s.extra_rdoc_files = [
     "README.rdoc"
   ]

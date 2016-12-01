@@ -156,6 +156,15 @@ class Redis::Model
       eval_writer(name)
     end
 
+    # Defines accessor for redis hash
+    def hash(name, type = :string)
+      class_name = marshal_class_name(name, type)
+
+      fields << {:name => name.to_s, :type => :hash}
+      class_eval "def #{name}; @#{name} ||= HashProxy.new(self.redis, field_key('#{name}'), Marshal::#{class_name}); end"
+      eval_writer(name)
+    end
+
     def marshal_class_name(name, type)
       Marshal::TYPES[type] or raise ArgumentError.new("Unknown type #{type} for field #{name}")
     end
@@ -391,4 +400,64 @@ class Redis::Model
       COMMANDS[m]
     end
   end
+
+  class HashProxy < FieldProxy #:nodoc:
+    COMMANDS = {
+      # :intersect_store  => "sinterstore",
+      # :union_store      => "sunionstore",
+      # :diff_store       => "sdiffstore",
+      # :move             => "smove",
+    }
+
+    def []=(index, v)
+      @redis.hset(@name, index, @marshal.dump(v))
+    end
+    
+    def [](index, to = nil)
+      @marshal.load(@redis.hget(@name, index))
+    end
+
+    def add_to(index, v)
+      value = (self[index] or [])
+      if value.is_a?(Array)
+        value << v
+      else
+        raise "Value can only be added to an array and the base value is not an array: #{v.inspect}"
+      end
+      self[index] = value
+    end
+    
+    def delete(k)
+      @redis.hdel @name, k
+    end
+
+    def has_key?(k)
+      @redis.hexists @name, k
+    end
+
+    def keys
+      @redis.hkeys(@name) || []
+    end
+
+    def size
+      @redis.hlen(@name)
+    end
+
+    def to_h
+      keys.inject({}){|hash, key| 
+        hash.merge!({key => self[key]})
+      }
+    end
+
+    def to_s
+      to_h.to_json
+    end
+
+    protected
+
+    def translate_method_name(m)
+      COMMANDS[m]
+    end
+  end
 end
+
