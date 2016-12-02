@@ -447,6 +447,16 @@ class Redis::Model
       @redis.hlen(@name)
     end
 
+    def from_h(hash)
+      if(hash.nil?)
+        remove_all
+      else
+        hash.each do |key, attrs|
+          add_to(key, attrs)
+        end
+      end
+    end    
+
     def to_h
       keys.inject({}){|hash, key| 
         hash.merge!({key => self[key]})
